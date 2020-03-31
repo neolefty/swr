@@ -3,7 +3,7 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitForDomChange,
+  waitForDomChange
 } from '@testing-library/react'
 import React, { ReactNode, Suspense, useEffect, useState } from 'react'
 
@@ -14,7 +14,7 @@ class ErrorBoundary extends React.Component<{ fallback: ReactNode }> {
   state = { hasError: false }
   static getDerivedStateFromError() {
     return {
-      hasError: true,
+      hasError: true
     }
   }
   render() {
@@ -54,10 +54,7 @@ describe('useSWR', () => {
 
   it('should allow functions as key and reuse the cache', async () => {
     function Page() {
-      const { data } = useSWR(
-        () => 'constant-2',
-        () => 'SWR'
-      )
+      const { data } = useSWR(() => 'constant-2', () => 'SWR')
       return <div>hello, {data}</div>
     }
     const { container } = render(<Page />)
@@ -71,7 +68,7 @@ describe('useSWR', () => {
     function Page() {
       const { data } = useSWR(
         'constant-3',
-        () => new Promise((res) => setTimeout(() => res('SWR'), 200))
+        () => new Promise(res => setTimeout(() => res('SWR'), 200))
       )
       return <div>hello, {data}</div>
     }
@@ -88,7 +85,7 @@ describe('useSWR', () => {
     let count = 0
     const fetch = () => {
       count++
-      return new Promise((res) => setTimeout(() => res('SWR'), 200))
+      return new Promise(res => setTimeout(() => res('SWR'), 200))
     }
 
     function Page() {
@@ -114,8 +111,8 @@ describe('useSWR', () => {
     function Page() {
       const { data } = useSWR(
         'constant-5',
-        () => new Promise((res) => setTimeout(() => res('SWR'), 200)),
-        { onSuccess: (_data) => (SWRData = _data) }
+        () => new Promise(res => setTimeout(() => res('SWR'), 200)),
+        { onSuccess: _data => (SWRData = _data) }
       )
       return <div>hello, {data}</div>
     }
@@ -137,7 +134,7 @@ describe('useSWR', () => {
         refreshInterval: 100,
         // need to turn of deduping otherwise
         // refreshing will be ignored
-        dedupingInterval: 10,
+        dedupingInterval: 10
       })
       return <>{data}</>
     }
@@ -149,11 +146,11 @@ describe('useSWR', () => {
       )
     }
     const { container } = render(<Page />)
-    await act(() => new Promise((res) => setTimeout(res, 10)))
+    await act(() => new Promise(res => setTimeout(res, 10)))
     expect(container.textContent).toMatchInlineSnapshot(`"0 0 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 100)))
+    await act(() => new Promise(res => setTimeout(res, 100)))
     expect(container.textContent).toMatchInlineSnapshot(`"1 1 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 100)))
+    await act(() => new Promise(res => setTimeout(res, 100)))
     expect(container.textContent).toMatchInlineSnapshot(`"2 2 2"`)
   })
 
@@ -171,7 +168,7 @@ describe('useSWR', () => {
           refreshInterval: 100,
           // need to turn of deduping otherwise
           // refreshing will be ignored
-          dedupingInterval: 10,
+          dedupingInterval: 10
         }
       )
       if (error) return error.message
@@ -185,11 +182,11 @@ describe('useSWR', () => {
       )
     }
     const { container } = render(<Page />)
-    await act(() => new Promise((res) => setTimeout(res, 10)))
+    await act(() => new Promise(res => setTimeout(res, 10)))
     expect(container.textContent).toMatchInlineSnapshot(`"0 0 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 100)))
+    await act(() => new Promise(res => setTimeout(res, 100)))
     expect(container.textContent).toMatchInlineSnapshot(`"1 1 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 100)))
+    await act(() => new Promise(res => setTimeout(res, 100)))
     expect(container.textContent).toMatchInlineSnapshot(`"err err err"`)
   })
 
@@ -251,7 +248,7 @@ describe('useSWR', () => {
 
     function Page() {
       const { data } = useSWR('initial-data-1', fetcher, {
-        initialData: 'Initial',
+        initialData: 'Initial'
       })
       return <div>hello, {data}</div>
     }
@@ -269,7 +266,7 @@ describe('useSWR', () => {
 
     function Page() {
       const { data } = useSWR('config-as-second-param', {
-        fetcher,
+        fetcher
       })
 
       return <div>hello, {data}</div>
@@ -289,8 +286,7 @@ describe('useSWR', () => {
 describe('useSWR - loading', () => {
   afterEach(cleanup)
 
-  const loadData = () =>
-    new Promise((res) => setTimeout(() => res('data'), 100))
+  const loadData = () => new Promise(res => setTimeout(() => res('data'), 100))
 
   it('should return loading state', async () => {
     let renderCount = 0
@@ -339,7 +335,7 @@ describe('useSWR - loading', () => {
     let renderCount = 0,
       dataLoaded = false
     const loadDataWithLog = () =>
-      new Promise((res) =>
+      new Promise(res =>
         setTimeout(() => {
           dataLoaded = true
           res('data')
@@ -356,7 +352,7 @@ describe('useSWR - loading', () => {
     const { container } = render(<Page />)
     expect(container.textContent).toMatchInlineSnapshot(`"hello"`)
 
-    await act(() => new Promise((res) => setTimeout(res, 110))) // wait
+    await act(() => new Promise(res => setTimeout(res, 110))) // wait
     // it doesn't re-render, but fetch was triggered
     expect(renderCount).toEqual(1)
     expect(dataLoaded).toEqual(true)
@@ -372,7 +368,7 @@ describe('useSWR - refresh', () => {
     function Page() {
       const { data } = useSWR('dynamic-1', () => count++, {
         refreshInterval: 200,
-        dedupingInterval: 100,
+        dedupingInterval: 100
       })
       return <div>count: {data}</div>
     }
@@ -382,11 +378,11 @@ describe('useSWR - refresh', () => {
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: "`)
     await waitForDomChange({ container }) // mount
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 210))) // update
+    await act(() => new Promise(res => setTimeout(res, 210))) // update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 50))) // no update
+    await act(() => new Promise(res => setTimeout(res, 50))) // no update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 150))) // update
+    await act(() => new Promise(res => setTimeout(res, 150))) // update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 2"`)
   })
 
@@ -396,7 +392,7 @@ describe('useSWR - refresh', () => {
     function Page() {
       const { data } = useSWR('dynamic-2', () => count++, {
         refreshInterval: 200,
-        dedupingInterval: 300,
+        dedupingInterval: 300
       })
       return <div>count: {data}</div>
     }
@@ -406,13 +402,13 @@ describe('useSWR - refresh', () => {
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: "`)
     await waitForDomChange({ container }) // mount
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 210))) // no update (deduped)
+    await act(() => new Promise(res => setTimeout(res, 210))) // no update (deduped)
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 200))) // update
+    await act(() => new Promise(res => setTimeout(res, 200))) // update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 200))) // no update (deduped)
+    await act(() => new Promise(res => setTimeout(res, 200))) // no update (deduped)
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 200))) // update
+    await act(() => new Promise(res => setTimeout(res, 200))) // update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 2"`)
   })
 
@@ -422,7 +418,7 @@ describe('useSWR - refresh', () => {
       const [int, setInt] = React.useState(200)
       const { data } = useSWR('/api', () => count++, {
         refreshInterval: int,
-        dedupingInterval: 100,
+        dedupingInterval: 100
       })
       return <div onClick={() => setInt(int + 100)}>count: {data}</div>
     }
@@ -432,40 +428,40 @@ describe('useSWR - refresh', () => {
     await waitForDomChange({ container }) // mount
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 0"`)
     await act(() => {
-      return new Promise((res) => setTimeout(res, 210))
+      return new Promise(res => setTimeout(res, 210))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
     await act(() => {
-      return new Promise((res) => setTimeout(res, 50))
+      return new Promise(res => setTimeout(res, 50))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 1"`)
     await act(() => {
-      return new Promise((res) => setTimeout(res, 150))
+      return new Promise(res => setTimeout(res, 150))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 2"`)
     await act(() => {
       fireEvent.click(container.firstElementChild)
       // it will clear 200ms timer and setup a new 300ms timer
-      return new Promise((res) => setTimeout(res, 200))
+      return new Promise(res => setTimeout(res, 200))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 2"`)
     await act(() => {
-      return new Promise((res) => setTimeout(res, 110))
+      return new Promise(res => setTimeout(res, 110))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 3"`)
     await act(() => {
       // wait for new 300ms timer
-      return new Promise((res) => setTimeout(res, 310))
+      return new Promise(res => setTimeout(res, 310))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 4"`)
     await act(() => {
       fireEvent.click(container.firstElementChild)
       // it will clear 300ms timer and setup a new 400ms timer
-      return new Promise((res) => setTimeout(res, 300))
+      return new Promise(res => setTimeout(res, 300))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 4"`)
     await act(() => {
-      return new Promise((res) => setTimeout(res, 110))
+      return new Promise(res => setTimeout(res, 110))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"count: 5"`)
   })
@@ -476,7 +472,7 @@ describe('useSWR - refresh', () => {
         'dynamic-11',
         () => ({
           timestamp: +new Date(),
-          version: '1.0',
+          version: '1.0'
         }),
         {
           compare: function isEqual(a, b) {
@@ -487,7 +483,7 @@ describe('useSWR - refresh', () => {
               return false
             }
             return a.version === b.version
-          },
+          }
         }
       )
 
@@ -505,7 +501,7 @@ describe('useSWR - refresh', () => {
     await act(() => {
       // trigger revalidation
       fireEvent.click(container.firstElementChild)
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     const secondContent = container.firstChild.textContent
     expect(firstContent).toEqual(secondContent)
@@ -531,7 +527,7 @@ describe('useSWR - revalidate', () => {
     await act(() => {
       // trigger revalidation
       fireEvent.click(container.firstElementChild)
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -557,7 +553,7 @@ describe('useSWR - revalidate', () => {
     await act(() => {
       // trigger revalidation
       fireEvent.click(container.firstElementChild)
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"1, 1"`)
   })
@@ -569,7 +565,7 @@ describe('useSWR - revalidate', () => {
       const { data, revalidate } = useSWR(
         'race',
         () =>
-          new Promise((res) => {
+          new Promise(res => {
             const value = faster ? 1 : 0
             setTimeout(() => res(value), faster ? 100 : 200)
           })
@@ -588,11 +584,11 @@ describe('useSWR - revalidate', () => {
       // trigger the slower revalidation
       faster = false
       fireEvent.click(container.firstElementChild)
-      await new Promise((res) => setTimeout(res, 10))
+      await new Promise(res => setTimeout(res, 10))
       // trigger the faster revalidation
       faster = true
       fireEvent.click(container.firstElementChild)
-      return new Promise((res) => setTimeout(res, 210))
+      return new Promise(res => setTimeout(res, 210))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"1"`)
   })
@@ -656,7 +652,7 @@ describe('useSWR - error', () => {
           onErrorRetry: (_, __, ___, revalidate, revalidateOpts) => {
             setTimeout(() => revalidate(revalidateOpts), 100)
           },
-          dedupingInterval: 0,
+          dedupingInterval: 0
         }
       )
       if (error) return <div>{error.message}</div>
@@ -667,9 +663,9 @@ describe('useSWR - error', () => {
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"hello, "`)
     await waitForDomChange({ container })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 210))) // retry
+    await act(() => new Promise(res => setTimeout(res, 210))) // retry
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 1"`)
-    await act(() => new Promise((res) => setTimeout(res, 210))) // retry
+    await act(() => new Promise(res => setTimeout(res, 210))) // retry
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 2"`)
   })
 
@@ -679,11 +675,11 @@ describe('useSWR - error', () => {
     function Page() {
       const { data } = useSWR(
         'error-4',
-        () => new Promise((res) => setTimeout(() => res('SWR'), 200)),
+        () => new Promise(res => setTimeout(() => res('SWR'), 200)),
         {
-          onLoadingSlow: (key) => (loadingSlow = key),
+          onLoadingSlow: key => (loadingSlow = key),
           onSuccess: (_, key) => (success = key),
-          loadingTimeout: 100,
+          loadingTimeout: 100
         }
       )
       return <div>hello, {data}</div>
@@ -692,10 +688,10 @@ describe('useSWR - error', () => {
 
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"hello, "`)
     expect(loadingSlow).toEqual(null)
-    await act(() => new Promise((res) => setTimeout(res, 110))) // slow
+    await act(() => new Promise(res => setTimeout(res, 110))) // slow
     expect(loadingSlow).toEqual('error-4')
     expect(success).toEqual(null)
-    await act(() => new Promise((res) => setTimeout(res, 100))) // finish
+    await act(() => new Promise(res => setTimeout(res, 100))) // finish
     expect(success).toEqual('error-4')
     expect(container.firstChild.textContent).toMatchInlineSnapshot(
       `"hello, SWR"`
@@ -716,7 +712,7 @@ it('should trigger limited error retries if errorRetryCount exists', async () =>
       {
         errorRetryCount: 1,
         errorRetryInterval: 50,
-        dedupingInterval: 0,
+        dedupingInterval: 0
       }
     )
     if (error) return <div>{error.message}</div>
@@ -727,9 +723,9 @@ it('should trigger limited error retries if errorRetryCount exists', async () =>
   expect(container.firstChild.textContent).toMatchInlineSnapshot(`"hello, "`)
   await waitForDomChange({ container })
   expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 0"`)
-  await act(() => new Promise((res) => setTimeout(res, 210))) // retry
+  await act(() => new Promise(res => setTimeout(res, 210))) // retry
   expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 1"`)
-  await act(() => new Promise((res) => setTimeout(res, 210))) // retry
+  await act(() => new Promise(res => setTimeout(res, 210))) // retry
   expect(container.firstChild.textContent).toMatchInlineSnapshot(`"error: 1"`)
 })
 
@@ -741,7 +737,7 @@ describe('useSWR - focus', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-5', () => value++, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -754,7 +750,7 @@ describe('useSWR - focus', () => {
     await act(() => {
       // trigger revalidation
       fireEvent.focus(window)
-      return new Promise((res) => setTimeout(res, 2))
+      return new Promise(res => setTimeout(res, 2))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -765,7 +761,7 @@ describe('useSWR - focus', () => {
     function Page() {
       const { data } = useSWR('dynamic-6', () => value++, {
         dedupingInterval: 0,
-        revalidateOnFocus: false,
+        revalidateOnFocus: false
       })
       return <div>data: {data}</div>
     }
@@ -778,7 +774,7 @@ describe('useSWR - focus', () => {
     await act(() => {
       // trigger revalidation
       fireEvent.focus(window)
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 0"`)
   })
@@ -792,7 +788,7 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-7', () => value++, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -805,7 +801,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // trigger revalidation
       trigger('dynamic-7')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -815,7 +811,7 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-12', () => value++, {
-        dedupingInterval: 2000,
+        dedupingInterval: 2000
       })
       return <div>data: {data}</div>
     }
@@ -828,7 +824,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // trigger revalidation
       trigger('dynamic-12')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -838,7 +834,7 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-8', () => value++, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -851,7 +847,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // mutate and revalidate
       mutate('dynamic-8', 'mutate')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -861,10 +857,10 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-13', () => value++, {
-        dedupingInterval: 2000,
+        dedupingInterval: 2000
       })
       useSWR('dynamic-13', () => value++, {
-        dedupingInterval: 2000,
+        dedupingInterval: 2000
       })
       return <div>data: {data}</div>
     }
@@ -877,7 +873,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // mutate and revalidate
       mutate('dynamic-13')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -886,7 +882,7 @@ describe('useSWR - local mutation', () => {
     function Page() {
       const { data } = useSWR(
         'dynamic-9',
-        () => new Promise((res) => setTimeout(() => res('truth'), 200)),
+        () => new Promise(res => setTimeout(() => res('truth'), 200)),
         { dedupingInterval: 0 }
       )
       return <div>data: {data}</div>
@@ -902,12 +898,12 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // mutate and revalidate
       mutate('dynamic-9', 'local')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(
       `"data: local"`
     )
-    await act(() => new Promise((res) => setTimeout(res, 200))) // recovers
+    await act(() => new Promise(res => setTimeout(res, 200))) // recovers
     expect(container.firstChild.textContent).toMatchInlineSnapshot(
       `"data: truth"`
     )
@@ -916,7 +912,7 @@ describe('useSWR - local mutation', () => {
   it('should support async mutation', async () => {
     function Page() {
       const { data } = useSWR('mutate-1', () => 0, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -930,11 +926,11 @@ describe('useSWR - local mutation', () => {
       // mutate and revalidate
       return mutate(
         'mutate-1',
-        new Promise((res) => setTimeout(() => res(999), 100)),
+        new Promise(res => setTimeout(() => res(999), 100)),
         false
       )
     })
-    await act(() => new Promise((res) => setTimeout(res, 110)))
+    await act(() => new Promise(res => setTimeout(res, 110)))
     expect(container.textContent).toMatchInlineSnapshot(`"data: 999"`)
   })
 
@@ -943,7 +939,7 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR('dynamic-14', () => value++, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -956,7 +952,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // trigger revalidation
       mutate('dynamic-14')
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -1013,7 +1009,7 @@ describe('useSWR - local mutation', () => {
     function Section() {
       const { data } = useSWR(
         'mutate-2',
-        () => new Promise((res) => setTimeout(() => res(2), 200))
+        () => new Promise(res => setTimeout(() => res(2), 200))
       )
       return <div>{data}</div>
     }
@@ -1021,10 +1017,10 @@ describe('useSWR - local mutation', () => {
     const { container } = render(<Section />)
 
     expect(container.textContent).toMatchInlineSnapshot(`"1"`) // directly from cache
-    await act(() => new Promise((res) => setTimeout(res, 150))) // still suspending
+    await act(() => new Promise(res => setTimeout(res, 150))) // still suspending
     mutate('mutate-2', 3) // set it to 3. this will drop the ongoing request
     expect(container.textContent).toMatchInlineSnapshot(`"3"`)
-    await act(() => new Promise((res) => setTimeout(res, 100)))
+    await act(() => new Promise(res => setTimeout(res, 100)))
     expect(container.textContent).toMatchInlineSnapshot(`"3"`)
   })
 
@@ -1033,7 +1029,7 @@ describe('useSWR - local mutation', () => {
 
     function Page() {
       const { data } = useSWR([null], () => value++, {
-        dedupingInterval: 0,
+        dedupingInterval: 0
       })
       return <div>data: {data}</div>
     }
@@ -1046,7 +1042,7 @@ describe('useSWR - local mutation', () => {
     await act(() => {
       // trigger revalidation
       trigger([null])
-      return new Promise((res) => setTimeout(res, 1))
+      return new Promise(res => setTimeout(res, 1))
     })
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
@@ -1079,7 +1075,7 @@ describe('useSWR - context configs', () => {
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: "`)
     await waitForDomChange({ container }) // mount
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 0"`)
-    await act(() => new Promise((res) => setTimeout(res, 110))) // update
+    await act(() => new Promise(res => setTimeout(res, 110))) // update
     expect(container.firstChild.textContent).toMatchInlineSnapshot(`"data: 1"`)
   })
 })
@@ -1091,9 +1087,9 @@ describe('useSWR - suspense', () => {
     function Section() {
       const { data } = useSWR(
         'suspense-1',
-        () => new Promise((res) => setTimeout(() => res('SWR'), 100)),
+        () => new Promise(res => setTimeout(() => res('SWR'), 100)),
         {
-          suspense: true,
+          suspense: true
         }
       )
       return <div>{data}</div>
@@ -1106,7 +1102,7 @@ describe('useSWR - suspense', () => {
 
     // hydration
     expect(container.textContent).toMatchInlineSnapshot(`"fallback"`)
-    await act(() => new Promise((res) => setTimeout(res, 110))) // update
+    await act(() => new Promise(res => setTimeout(res, 110))) // update
     expect(container.textContent).toMatchInlineSnapshot(`"SWR"`)
   })
 
@@ -1114,16 +1110,16 @@ describe('useSWR - suspense', () => {
     function Section() {
       const { data: v1 } = useSWR<number>(
         'suspense-2',
-        () => new Promise((res) => setTimeout(() => res(1), 100)),
+        () => new Promise(res => setTimeout(() => res(1), 100)),
         {
-          suspense: true,
+          suspense: true
         }
       )
       const { data: v2 } = useSWR<number>(
         'suspense-3',
-        () => new Promise((res) => setTimeout(() => res(2), 100)),
+        () => new Promise(res => setTimeout(() => res(2), 100)),
         {
-          suspense: true,
+          suspense: true
         }
       )
       return <div>{v1 + v2}</div>
@@ -1136,16 +1132,16 @@ describe('useSWR - suspense', () => {
 
     // hydration
     expect(container.textContent).toMatchInlineSnapshot(`"fallback"`)
-    await act(() => new Promise((res) => setTimeout(res, 150))) // still suspending
+    await act(() => new Promise(res => setTimeout(res, 150))) // still suspending
     expect(container.textContent).toMatchInlineSnapshot(`"fallback"`)
-    await act(() => new Promise((res) => setTimeout(res, 100))) // should recover
+    await act(() => new Promise(res => setTimeout(res, 100))) // should recover
     expect(container.textContent).toMatchInlineSnapshot(`"3"`)
   })
 
   it('should work for non-promises', async () => {
     function Section() {
       const { data } = useSWR('suspense-4', () => 'hello', {
-        suspense: true,
+        suspense: true
       })
       return <div>{data}</div>
     }
@@ -1166,7 +1162,7 @@ describe('useSWR - suspense', () => {
         () =>
           new Promise((_, reject) => setTimeout(() => reject('error'), 100)),
         {
-          suspense: true,
+          suspense: true
         }
       )
       return <div>{data}</div>
@@ -1182,7 +1178,7 @@ describe('useSWR - suspense', () => {
 
     // hydration
     expect(container.textContent).toMatchInlineSnapshot(`"fallback"`)
-    await act(() => new Promise((res) => setTimeout(res, 150))) // still suspending
+    await act(() => new Promise(res => setTimeout(res, 150))) // still suspending
     expect(container.textContent).toMatchInlineSnapshot(`"error boundary"`)
 
     console.info('*The warning above can be ignored (caught by ErrorBoundary).')
@@ -1198,7 +1194,7 @@ describe('useSWR - suspense', () => {
         () =>
           new Promise((_, reject) => setTimeout(() => reject('error'), 100)),
         {
-          suspense: true,
+          suspense: true
         }
       )
       return (
@@ -1215,7 +1211,7 @@ describe('useSWR - suspense', () => {
     )
 
     expect(container.textContent).toMatchInlineSnapshot(`"hello, "`) // directly from cache
-    await act(() => new Promise((res) => setTimeout(res, 150))) // still suspending
+    await act(() => new Promise(res => setTimeout(res, 150))) // still suspending
     expect(container.textContent).toMatchInlineSnapshot(`"hello, error"`) // get error with cache
   })
 
@@ -1226,9 +1222,9 @@ describe('useSWR - suspense', () => {
       const [key, setKey] = useState('suspense-7')
       const { data } = useSWR(
         key,
-        (k) => new Promise((res) => setTimeout(() => res(k), 50)),
+        k => new Promise(res => setTimeout(() => res(k), 50)),
         {
-          suspense: true,
+          suspense: true
         }
       )
 
@@ -1251,7 +1247,7 @@ describe('useSWR - suspense', () => {
       </Suspense>
     )
 
-    await act(() => new Promise((res) => setTimeout(res, 110)))
+    await act(() => new Promise(res => setTimeout(res, 110)))
 
     // fixes https://github.com/zeit/swr/issues/57
     // 'suspense-7' -> undefined -> 'suspense-8'
@@ -1265,7 +1261,7 @@ describe('useSWR - cache', () => {
 
     function Page() {
       const { data } = useSWR('cache-1', () => 'random message', {
-        suspense: true,
+        suspense: true
       })
       return <div>{data}</div>
     }
@@ -1325,5 +1321,78 @@ describe('useSWR - cache', () => {
     tmpCache.set('cache-2', 'a different message')
 
     expect(listener).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('useSWR - key', () => {
+  afterEach(cleanup)
+
+  it('should respect requests after key has changed', async () => {
+    let rerender
+
+    function Page() {
+      const [mounted, setMounted] = useState(0)
+      const key = `key-1-${mounted ? 'short' : 'long'}`
+      const { data } = useSWR(key, async () => {
+        if (mounted) {
+          await new Promise(res => setTimeout(res, 100))
+          return 'short request'
+        }
+        await new Promise(res => setTimeout(res, 200))
+        return 'long request'
+      })
+      useEffect(() => setMounted(1), [])
+      rerender = setMounted
+
+      return <div>{data}</div>
+    }
+
+    const { container } = render(<Page />)
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(`""`)
+    await waitForDomChange({ container })
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(
+      `"short request"`
+    )
+    await act(() => new Promise(res => setTimeout(res, 110))) // wait 100ms until "long request" finishes
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(
+      `"short request"`
+    ) // should be "short request" still
+
+    // manually trigger a re-render from outside
+    // this triggers a re-render, and a read access to `swr.data`
+    // but the result should still be "short request"
+    await act(() => rerender(x => x + 1))
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(
+      `"short request"`
+    )
+  })
+
+  it('should render undefined after key has changed', async () => {
+    function Page() {
+      const [mounted, setMounted] = useState(false)
+      const key = `key-${mounted ? '1' : '0'}`
+      const { data } = useSWR(key, async k => {
+        await new Promise(res => setTimeout(res, 200))
+        return k
+      })
+      useEffect(() => {
+        setTimeout(() => setMounted(true), 320)
+      }, [])
+      return <div>{data}</div>
+    }
+
+    //    time     data       key
+    // -> 0        undefined, '0'
+    // -> 200      0,         '0'
+    // -> 320      undefined, '1' <- this state is required; we can't show 0 here
+    // -> 520      1,         '1'
+    const { container } = render(<Page />)
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(`""`) // undefined, time=0
+    await act(() => new Promise(res => setTimeout(res, 210)))
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(`"key-0"`) // 0, time=210
+    await act(() => new Promise(res => setTimeout(res, 200)))
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(`""`) // undefined, time=410
+    await act(() => new Promise(res => setTimeout(res, 140)))
+    expect(container.firstChild.textContent).toMatchInlineSnapshot(`"key-1"`) // 1, time=550
   })
 })
